@@ -1,0 +1,6 @@
+{
+  "name": "UNIQUE CHAT INDIA",
+  "description": "Live voice chat rooms, private messaging, multiplayer games and social community app",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

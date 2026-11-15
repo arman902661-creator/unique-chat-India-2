@@ -1,0 +1,176 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with authentication and role information",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Unique Firebase Auth user ID" },
+        "email": { "type": "string", "description": "User email address" },
+        "phoneNumber": { "type": "string", "description": "User mobile phone number" },
+        "displayName": { "type": "string", "description": "User public display name" },
+        "photoUrl": { "type": "string", "description": "Avatar photo URL" },
+        "role": { "type": "string", "enum": ["user", "moderator", "admin", "owner"], "description": "User authorization role" },
+        "isOnline": { "type": "boolean", "description": "Current presence status" },
+        "isBanned": { "type": "boolean", "description": "Whether user account is banned" },
+        "virtualCoins": { "type": "integer", "description": "User virtual coin balance" },
+        "bio": { "type": "string", "description": "Short bio description" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["userId", "displayName"]
+    },
+    "ChatRoom": {
+      "title": "ChatRoom",
+      "description": "Live voice chat room configuration and participant state",
+      "type": "object",
+      "properties": {
+        "roomId": { "type": "string", "description": "Unique room identifier" },
+        "name": { "type": "string", "description": "Room title" },
+        "description": { "type": "string", "description": "Room description" },
+        "roomType": { "type": "string", "enum": ["public", "private", "password"], "description": "Accessibility of the room" },
+        "passwordHash": { "type": "string", "description": "Hashed password for protected rooms" },
+        "roomImageUrl": { "type": "string", "description": "Cover image URL" },
+        "ownerId": { "type": "string", "description": "User ID of room creator" },
+        "ownerName": { "type": "string", "description": "Display name of room creator" },
+        "moderatorIds": { "type": "array", "description": "List of user IDs with room moderator permissions" },
+        "bannedUserIds": { "type": "array", "description": "List of banned user IDs from room" },
+        "mutedUserIds": { "type": "array", "description": "List of muted user IDs" },
+        "activeMicSeats": { "type": "object", "description": "Map of seatIndex to userId occupying voice seat" },
+        "announcement": { "type": "string", "description": "Banner announcement for room" },
+        "isLive": { "type": "boolean", "description": "Whether room is currently active" },
+        "memberCount": { "type": "integer", "description": "Count of users in room" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp" }
+      },
+      "required": ["name", "ownerId", "roomType"]
+    },
+    "RoomMessage": {
+      "title": "RoomMessage",
+      "description": "Chat message or virtual gift sent inside a live room",
+      "type": "object",
+      "properties": {
+        "messageId": { "type": "string", "description": "Unique message ID" },
+        "roomId": { "type": "string", "description": "Parent room ID" },
+        "senderId": { "type": "string", "description": "Sender User ID" },
+        "senderName": { "type": "string", "description": "Sender display name" },
+        "senderAvatar": { "type": "string", "description": "Sender avatar URL" },
+        "text": { "type": "string", "description": "Message content or gift text" },
+        "type": { "type": "string", "enum": ["text", "gift", "system"], "description": "Type of message" },
+        "giftName": { "type": "string", "description": "Name of virtual gift sent" },
+        "giftValue": { "type": "integer", "description": "Coin cost of the gift" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp" }
+      },
+      "required": ["roomId", "senderId", "senderName", "text"]
+    },
+    "PrivateChat": {
+      "title": "PrivateChat",
+      "description": "One-to-one conversation between two users",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string", "description": "Chat identifier" },
+        "participants": { "type": "array", "description": "List of 2 participant userIds" },
+        "lastMessage": { "type": "string", "description": "Last sent snippet" },
+        "lastSenderId": { "type": "string", "description": "User ID of last sender" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of latest activity" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["participants"]
+    },
+    "PrivateMessage": {
+      "title": "PrivateMessage",
+      "description": "Individual 1-to-1 message",
+      "type": "object",
+      "properties": {
+        "messageId": { "type": "string", "description": "Unique message ID" },
+        "chatId": { "type": "string", "description": "Parent chat ID" },
+        "senderId": { "type": "string", "description": "User ID of sender" },
+        "receiverId": { "type": "string", "description": "User ID of recipient" },
+        "text": { "type": "string", "description": "Text content" },
+        "imageUrl": { "type": "string", "description": "Optional shared image URL" },
+        "isRead": { "type": "boolean", "description": "Read receipt status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp" }
+      },
+      "required": ["chatId", "senderId", "receiverId"]
+    },
+    "GameSession": {
+      "title": "GameSession",
+      "description": "Multiplayer game state session",
+      "type": "object",
+      "properties": {
+        "gameId": { "type": "string", "description": "Game room identifier" },
+        "gameType": { "type": "string", "enum": ["tictactoe", "ludo", "chess", "quiz"], "description": "Game type" },
+        "players": { "type": "array", "description": "List of player user IDs" },
+        "currentTurn": { "type": "string", "description": "User ID of currently active player" },
+        "status": { "type": "string", "enum": ["waiting", "playing", "completed"], "description": "Game state" },
+        "gameStateJson": { "type": "string", "description": "Serialized board state" },
+        "winnerId": { "type": "string", "description": "User ID of winning player or 'draw'" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation time" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update time" }
+      },
+      "required": ["gameType", "players", "status"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "User or room violation report",
+      "type": "object",
+      "properties": {
+        "reportId": { "type": "string", "description": "Report ID" },
+        "reporterId": { "type": "string", "description": "Reporter user ID" },
+        "targetType": { "type": "string", "enum": ["user", "room"], "description": "Target entity type" },
+        "targetId": { "type": "string", "description": "Target ID being reported" },
+        "reason": { "type": "string", "description": "Explanation of violation" },
+        "status": { "type": "string", "enum": ["pending", "resolved", "dismissed"], "description": "Moderation status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Report timestamp" }
+      },
+      "required": ["reporterId", "targetType", "targetId", "reason"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Global application configuration and owner broadcast",
+      "type": "object",
+      "properties": {
+        "customerSupportNumber": { "type": "string", "description": "Support contact number" },
+        "ownerEmail": { "type": "string", "description": "Owner email address" },
+        "announcement": { "type": "string", "description": "Global app announcement banner" },
+        "maintenanceMode": { "type": "boolean", "description": "Global maintenance flag" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp" }
+      },
+      "required": ["customerSupportNumber", "ownerEmail"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile collection indexed by userId"
+    },
+    "/rooms/{roomId}": {
+      "schema": "ChatRoom",
+      "description": "Voice chat rooms"
+    },
+    "/rooms/{roomId}/messages/{messageId}": {
+      "schema": "RoomMessage",
+      "description": "Live text messages and gifts sent inside a room"
+    },
+    "/chats/{chatId}": {
+      "schema": "PrivateChat",
+      "description": "1-on-1 private conversations"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "PrivateMessage",
+      "description": "Private messages exchanged in a conversation"
+    },
+    "/games/{gameId}": {
+      "schema": "GameSession",
+      "description": "Real-time multiplayer games"
+    },
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Violation reports submitted to admin"
+    },
+    "/app_config/global": {
+      "schema": "AppConfig",
+      "description": "System-wide settings and broadcasts"
+    }
+  }
+}
